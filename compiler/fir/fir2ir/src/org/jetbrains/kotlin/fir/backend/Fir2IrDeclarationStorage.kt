@@ -50,9 +50,7 @@ import org.jetbrains.kotlin.ir.expressions.IrSyntheticBodyKind
 import org.jetbrains.kotlin.ir.expressions.impl.IrErrorExpressionImpl
 import org.jetbrains.kotlin.ir.symbols.*
 import org.jetbrains.kotlin.ir.symbols.impl.*
-import org.jetbrains.kotlin.ir.types.IrErrorType
-import org.jetbrains.kotlin.ir.types.IrSimpleType
-import org.jetbrains.kotlin.ir.types.IrType
+import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.name.*
 import org.jetbrains.kotlin.serialization.deserialization.descriptors.DeserializedContainerSource
@@ -198,6 +196,89 @@ class Fir2IrDeclarationStorage(
                 )
             }.also(fakeOverrideGenerator::bindOverriddenSymbols)
         }
+    }
+
+    fun calculateExpectActualMap(expectActualTypesMap: Map<IrClassSymbol, IrClassifierSymbol>): Map<IrSymbol, IrSymbol> {
+        val expectActualMembersMap = mutableMapOf<IrSymbol, IrSymbol>()
+        expectActualMembersMap.putAll(expectActualTypesMap)
+
+        val actualFunctions = mutableMapOf<IrFullName, MutableList<IrFunction>>()
+
+        for (irFunction in functionCache.values) {
+            if (!irFunction.isExpect) {
+                actualFunctions.getOrPut(IrFullName(irFunction.name, irFunction.parent.kotlinFqName)) { mutableListOf() }.add(irFunction)
+            }
+        }
+
+        for (irFunction in functionCache.values) {
+            if (irFunction.isExpect) {
+                val functions = actualFunctions[IrFullName(irFunction.name, irFunction.parent.kotlinFqName)] ?: continue
+                for (actualFunction in functions) {
+                    if (checkParameters(irFunction, actualFunction, expectActualTypesMap)) {
+                        expectActualMembersMap[irFunction.symbol] = actualFunction.symbol
+                        break
+                    }
+                }
+            }
+        }
+
+        val actualConstructors = mutableMapOf<FqName, MutableList<IrConstructor>>()
+
+        for (irConstructor in constructorCache.values) {
+            if (!irConstructor.isExpect) {
+                actualConstructors.getOrPut(irConstructor.parent.kotlinFqName) { mutableListOf() }.add(irConstructor)
+            }
+        }
+
+        for (irConstructor in constructorCache.values) {
+            if (irConstructor.isExpect) {
+                val constructors = actualConstructors[irConstructor.parent.kotlinFqName] ?: continue
+                for (actualConstructor in constructors) {
+                    if (checkParameters(irConstructor, actualConstructor, expectActualTypesMap)) {
+                        expectActualMembersMap[irConstructor.symbol] = actualConstructor.symbol
+                        break
+                    }
+                }
+            }
+        }
+
+        val actualProperties = mutableMapOf<IrFullName, IrProperty>()
+        for (irProperty in propertyCache.values) {
+            if (!irProperty.isExpect) {
+                actualProperties[IrFullName(irProperty.name, irProperty.parent.kotlinFqName)] = irProperty
+            }
+        }
+
+        for (irProperty in propertyCache.values) {
+            if (irProperty.isExpect) {
+                val actualProperty = actualProperties[IrFullName(irProperty.name, irProperty.parent.kotlinFqName)] ?: continue
+                expectActualMembersMap[irProperty.symbol] = actualProperty.symbol
+                irProperty.getter?.symbol?.let {
+                    expectActualMembersMap[it] = actualProperty.getter!!.symbol
+                }
+                irProperty.setter?.symbol?.let {
+                    expectActualMembersMap[it] = actualProperty.setter!!.symbol
+                }
+            }
+        }
+
+        return expectActualMembersMap
+    }
+
+    private fun checkParameters(
+        expectFunction: IrFunction,
+        actualFunction: IrFunction,
+        expectActualTypesMap: Map<IrClassSymbol, IrClassifierSymbol>
+    ): Boolean {
+        if (expectFunction.valueParameters.size != actualFunction.valueParameters.size) return false
+        for ((expectParameter, actualParameter) in expectFunction.valueParameters.zip(actualFunction.valueParameters)) {
+            val expectParameterTypeSymbol = expectParameter.type.classifierOrNull
+            val actualizedParameterTypeSymbol = expectActualTypesMap[expectParameterTypeSymbol] ?: expectParameterTypeSymbol
+            if (actualizedParameterTypeSymbol != actualParameter.type.classifierOrNull) {
+                return false
+            }
+        }
+        return true
     }
 
     fun registerFile(firFile: FirFile, irFile: IrFile) {

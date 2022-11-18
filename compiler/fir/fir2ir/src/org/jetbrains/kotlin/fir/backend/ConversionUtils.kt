@@ -752,3 +752,8 @@ fun FirCallableDeclaration.contextReceiversForFunctionOrContainingProperty(): Li
         this.propertySymbol.fir.contextReceivers
     else
         this.contextReceivers
+
+fun Fir2IrComponents.calculateExpectActualMap(): Map<IrSymbol, IrSymbol> {
+    val expectActualTypesMap = classifierStorage.computeExpectActualTypesMap()
+    return declarationStorage.calculateExpectActualMap(expectActualTypesMap)
+}

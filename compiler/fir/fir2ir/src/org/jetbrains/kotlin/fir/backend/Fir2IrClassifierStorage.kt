@@ -6,8 +6,8 @@
 package org.jetbrains.kotlin.fir.backend
 
 import org.jetbrains.kotlin.descriptors.*
-import org.jetbrains.kotlin.fir.containingClassLookupTag
 import org.jetbrains.kotlin.fir.containingClassForLocalAttr
+import org.jetbrains.kotlin.fir.containingClassLookupTag
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.declarations.utils.*
 import org.jetbrains.kotlin.fir.expressions.FirAnonymousObjectExpression
@@ -30,8 +30,10 @@ import org.jetbrains.kotlin.ir.declarations.impl.IrExternalPackageFragmentImpl
 import org.jetbrains.kotlin.ir.symbols.*
 import org.jetbrains.kotlin.ir.symbols.impl.*
 import org.jetbrains.kotlin.ir.types.IrType
+import org.jetbrains.kotlin.ir.types.classifierOrFail
 import org.jetbrains.kotlin.ir.types.impl.IrSimpleTypeImpl
 import org.jetbrains.kotlin.ir.util.IdSignature
+import org.jetbrains.kotlin.ir.util.kotlinFqName
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.name.StandardClassIds
@@ -71,6 +73,32 @@ class Fir2IrClassifierStorage(
             result.putAll(map)
             result
         }
+    }
+
+    fun computeExpectActualTypesMap(): Map<IrClassSymbol, IrClassifierSymbol> {
+        val actualClassesAndTypealiases = mutableMapOf<IrFullName, IrClassifierSymbol>()
+
+        for (irClass in classCache.values) {
+            if (!irClass.isExpect) {
+                actualClassesAndTypealiases[IrFullName(irClass.name, irClass.parent.kotlinFqName)] = irClass.symbol
+            }
+        }
+        for (irTypealias in typeAliasCache.values) {
+            if (irTypealias.isActual) {
+                actualClassesAndTypealiases[IrFullName(irTypealias.name, irTypealias.parent.kotlinFqName)] =
+                    irTypealias.expandedType.classifierOrFail
+            }
+        }
+
+        val expectActualTypesMap = mutableMapOf<IrClassSymbol, IrClassifierSymbol>()
+        for (irClass in classCache.values) {
+            if (irClass.isExpect) {
+                expectActualTypesMap[irClass.symbol] =
+                    actualClassesAndTypealiases[IrFullName(irClass.name, irClass.parent.kotlinFqName)] ?: continue
+            }
+        }
+
+        return expectActualTypesMap
     }
 
     private fun FirTypeRef.toIrType(typeContext: ConversionTypeContext = ConversionTypeContext.DEFAULT): IrType =

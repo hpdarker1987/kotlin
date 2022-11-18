@@ -70,7 +70,8 @@ class ClassicFrontend2IrConverter(
             state,
             codegenFactory,
             listOf(conversionResult),
-            emptyList()
+            emptyList(),
+            emptyMap()
         )
     }
 

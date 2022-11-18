@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.codegen.state.GenerationState
 import org.jetbrains.kotlin.config.LanguageFeature
 import org.jetbrains.kotlin.container.get
 import org.jetbrains.kotlin.fir.backend.Fir2IrComponents
+import org.jetbrains.kotlin.fir.backend.calculateExpectActualMap
 import org.jetbrains.kotlin.fir.backend.jvm.FirJvmBackendClassResolver
 import org.jetbrains.kotlin.fir.backend.jvm.FirJvmBackendExtension
 import org.jetbrains.kotlin.fir.backend.jvm.JvmFir2IrExtensions
@@ -30,7 +31,6 @@ import org.jetbrains.kotlin.test.model.FrontendKinds
 import org.jetbrains.kotlin.test.model.TestModule
 import org.jetbrains.kotlin.test.services.TestServices
 import org.jetbrains.kotlin.test.services.compilerConfigurationProvider
-
 class Fir2IrResultsConverter(
     testServices: TestServices
 ) : Frontend2BackendConverter<FirOutputArtifact, IrBackendInput>(
@@ -91,6 +91,8 @@ class Fir2IrResultsConverter(
             )
         }
 
+        val mainModuleComponents = componentsMap[module.name]!!
+
         val codegenFactory = JvmIrCodegenFactory(configuration, phaseConfig)
         val generationState = GenerationState.Builder(
             project, ClassBuilderFactories.TEST,
@@ -98,14 +100,15 @@ class Fir2IrResultsConverter(
         ).isIrBackend(
             true
         ).jvmBackendClassResolver(
-            FirJvmBackendClassResolver(componentsMap[module.name]!!)
+            FirJvmBackendClassResolver(mainModuleComponents)
         ).build()
 
         return IrBackendInput.JvmIrBackendInput(
             generationState,
             codegenFactory,
             resultParts,
-            sourceFiles
+            sourceFiles,
+            mainModuleComponents.calculateExpectActualMap()
         )
     }
 }

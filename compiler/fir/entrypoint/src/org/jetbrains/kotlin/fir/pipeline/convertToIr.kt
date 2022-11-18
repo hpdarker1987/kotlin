@@ -5,14 +5,12 @@
 
 package org.jetbrains.kotlin.fir.pipeline
 
+import org.jetbrains.kotlin.backend.common.IrActualizer
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.jvm.serialization.JvmIdSignatureDescriptor
 import org.jetbrains.kotlin.builtins.DefaultBuiltIns
 import org.jetbrains.kotlin.fir.FirSession
-import org.jetbrains.kotlin.fir.backend.Fir2IrComponents
-import org.jetbrains.kotlin.fir.backend.Fir2IrConverter
-import org.jetbrains.kotlin.fir.backend.Fir2IrExtensions
-import org.jetbrains.kotlin.fir.backend.Fir2IrResult
+import org.jetbrains.kotlin.fir.backend.*
 import org.jetbrains.kotlin.fir.backend.jvm.Fir2IrJvmSpecialAnnotationSymbolProvider
 import org.jetbrains.kotlin.fir.backend.jvm.FirJvmKotlinMangler
 import org.jetbrains.kotlin.fir.backend.jvm.FirJvmVisibilityConverter
@@ -45,16 +43,20 @@ fun FirResult.convertToIrAndActualize(
         val commonIrOutput = commonOutput.convertToIr(
             fir2IrExtensions,
             irGeneratorExtensions,
-            linkViaSignatures = true,
+            linkViaSignatures = linkViaSignatures,
             dependentComponents = emptyList()
         )
         result = platformOutput.convertToIr(
             fir2IrExtensions,
             irGeneratorExtensions,
-            linkViaSignatures = true,
+            linkViaSignatures = linkViaSignatures,
             dependentComponents = listOf(commonIrOutput.components)
         )
-        // TODO: implement IR actualization
+        IrActualizer.actualize(
+            result.irModuleFragment,
+            result.components.calculateExpectActualMap(),
+            listOf(commonIrOutput.irModuleFragment)
+        )
     } else {
         result = platformOutput.convertToIr(
             fir2IrExtensions,
@@ -94,7 +96,8 @@ private fun ModuleCompilerAnalyzedOutput.convertToIr(
             JvmIrMangler, IrFactoryImpl, FirJvmVisibilityConverter,
             Fir2IrJvmSpecialAnnotationSymbolProvider(),
             irGeneratorExtensions,
-            kotlinBuiltIns = DefaultBuiltIns.Instance // TODO: consider passing externally
+            kotlinBuiltIns = DefaultBuiltIns.Instance, // TODO: consider passing externally,
+            dependentComponents = dependentComponents
         )
     }
 }

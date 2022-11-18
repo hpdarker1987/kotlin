@@ -43,7 +43,8 @@ sealed class IrBackendInput : ResultingArtifact.BackendInput<IrBackendInput>() {
         val state: GenerationState,
         val codegenFactory: JvmIrCodegenFactory,
         val backendInput: List<JvmIrCodegenFactory.JvmIrBackendInput>,
-        val sourceFiles: List<KtSourceFile>
+        val sourceFiles: List<KtSourceFile>,
+        val expectActualMap: Map<IrSymbol, IrSymbol>,
     ) : IrBackendInput() {
         override val irModuleFragment: IrModuleFragment
             get() = backendInput.last().irModuleFragment
