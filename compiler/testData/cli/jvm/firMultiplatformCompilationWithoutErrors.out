@@ -8,8 +8,6 @@ This mode is not recommended for production use,
 as no stability/compatibility guarantees are given on
 compiler or generated code. Use it at your own risk!
 
-warning: ATTENTION!
- This build uses experimental K2 compiler:
-  -Xuse-k2
-error: k2 compiler does not support multi-platform projects yet, so please remove -Xuse-k2 flag
+warning: language version 2.0 is experimental, there are no backwards compatibility guarantees for new language and library features
+error: multi-platform projects are not yet supported in language version 2.0, please use 1.* (e.g. 1.9) instead
 COMPILATION_ERROR

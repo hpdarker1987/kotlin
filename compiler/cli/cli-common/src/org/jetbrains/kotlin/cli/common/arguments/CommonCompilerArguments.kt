@@ -646,7 +646,7 @@ abstract class CommonCompilerArguments : CommonToolArguments() {
         }
     }
 
-    private fun checkLanguageVersionIsStable(languageVersion: LanguageVersion, collector: MessageCollector) {
+    fun checkLanguageVersionIsStable(languageVersion: LanguageVersion, collector: MessageCollector) {
         if (!languageVersion.isStable && !suppressVersionWarnings) {
             collector.report(
                 CompilerMessageSeverity.STRONG_WARNING,

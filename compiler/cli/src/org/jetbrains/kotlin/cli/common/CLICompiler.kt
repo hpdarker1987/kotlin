@@ -31,8 +31,7 @@ import org.jetbrains.kotlin.cli.jvm.plugins.PluginCliParser
 import org.jetbrains.kotlin.cli.plugins.processCompilerPluginsOptions
 import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
-import org.jetbrains.kotlin.config.CompilerConfiguration
-import org.jetbrains.kotlin.config.Services
+import org.jetbrains.kotlin.config.*
 import org.jetbrains.kotlin.ir.util.IrMessageLogger
 import org.jetbrains.kotlin.metadata.deserialization.BinaryVersion
 import org.jetbrains.kotlin.progress.CompilationCanceledException
@@ -77,7 +76,7 @@ abstract class CLICompiler<A : CommonCompilerArguments> : CLITool<A>() {
         configuration.put(CLIConfigurationKeys.ORIGINAL_MESSAGE_COLLECTOR_KEY, messageCollector)
 
         val collector = GroupingMessageCollector(messageCollector, arguments.allWarningsAsErrors).also {
-            configuration.put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, it)
+            configuration.put(MESSAGE_COLLECTOR_KEY, it)
         }
 
         configuration.put(IrMessageLogger.IR_MESSAGE_LOGGER, IrMessageCollector(collector))
@@ -88,7 +87,7 @@ abstract class CLICompiler<A : CommonCompilerArguments> : CLITool<A>() {
             setupPlatformSpecificArgumentsAndServices(configuration, arguments, services)
             val paths = computeKotlinPaths(collector, arguments)
             if (collector.hasErrors()) {
-                return ExitCode.COMPILATION_ERROR
+                return COMPILATION_ERROR
             }
 
             val canceledStatus = services[CompilationCanceledStatus::class.java]
@@ -97,6 +96,36 @@ abstract class CLICompiler<A : CommonCompilerArguments> : CLITool<A>() {
             val rootDisposable = Disposer.newDisposable()
             try {
                 setIdeaIoUseFallback()
+
+                val useK2FromFlag = arguments.useK2
+                val languageVersion = configuration.languageVersionSettings.languageVersion
+                if (useK2FromFlag) {
+                    when {
+                        arguments.languageVersion == null -> {
+                            messageCollector.report(
+                                STRONG_WARNING,
+                                "Compiler flag -Xuse-k2 is deprecated, please use -language-version 2.0 instead"
+                            )
+                        }
+                        languageVersion >= LanguageVersion.KOTLIN_2_0 -> {
+                            messageCollector.report(
+                                STRONG_WARNING,
+                                "Compiler flag -Xuse-k2 is redundant"
+                            )
+                        }
+                        else -> {
+                            messageCollector.report(
+                                STRONG_WARNING,
+                                "With -Xuse-k2 compiler flag -language-version $languageVersion has no effect, please remove -Xuse-k2 flag or use -language-version 2.0 instead"
+                            )
+                        }
+                    }
+                    if (languageVersion < LanguageVersion.KOTLIN_2_0) {
+                        val languageVersionSettings = configuration.languageVersionSettings
+                        configuration.languageVersionSettings = languageVersionSettings.copy(LanguageVersion.KOTLIN_2_0)
+                        arguments.checkLanguageVersionIsStable(LanguageVersion.KOTLIN_2_0, messageCollector)
+                    }
+                }
 
                 val code = doExecute(arguments, configuration, rootDisposable, paths)
 
@@ -115,12 +144,12 @@ abstract class CLICompiler<A : CommonCompilerArguments> : CLITool<A>() {
                 return if (collector.hasErrors()) COMPILATION_ERROR else code
             } catch (e: CompilationCanceledException) {
                 collector.reportCompilationCancelled(e)
-                return ExitCode.OK
+                return OK
             } catch (e: RuntimeException) {
                 val cause = e.cause
                 if (cause is CompilationCanceledException) {
                     collector.reportCompilationCancelled(cause)
-                    return ExitCode.OK
+                    return OK
                 } else {
                     throw e
                 }
@@ -182,11 +211,11 @@ abstract class CLICompiler<A : CommonCompilerArguments> : CLITool<A>() {
         if (pluginConfigurations.isNotEmpty()) {
             var hasErrors = false
             messageCollector.report(WARNING, "Argument -Xcompiler-plugin is experimental")
-            if (!arguments.useK2) {
+            if (configuration.get(CommonConfigurationKeys.USE_FIR) != true) {
                 hasErrors = true
                 messageCollector.report(
                     ERROR,
-                    "-Xcompiler-plugin argument is allowed only for for K2 compiler. Please use -Xplugin argument or enable -Xuse-k2"
+                    "-Xcompiler-plugin argument is allowed only for language version 2.0. Please use -Xplugin argument or -language-version 2.0"
                 )
             }
             if (pluginClasspaths.isNotEmpty() || pluginOptions.isNotEmpty()) {

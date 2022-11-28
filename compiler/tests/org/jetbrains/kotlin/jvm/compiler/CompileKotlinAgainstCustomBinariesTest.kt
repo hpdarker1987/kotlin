@@ -394,7 +394,7 @@ class CompileKotlinAgainstCustomBinariesTest : AbstractKotlinCompilerIntegration
 
             // Starting from Kotlin 1.4, major.minor version of JVM metadata must be equal to the language version.
             // From Kotlin 1.0 to 1.4, we used JVM metadata version 1.1.*.
-            val expectedMajor = 1
+            val expectedMajor = if (languageVersion >= LanguageVersion.KOTLIN_2_0) 2 else 1
             val expectedMinor = if (languageVersion < LanguageVersion.KOTLIN_1_4) 1 else languageVersion.minor
 
             val topLevelClass = LocalFileKotlinClass.create(File(tmpdir.absolutePath, "Foo.class"))!!
@@ -551,7 +551,7 @@ class CompileKotlinAgainstCustomBinariesTest : AbstractKotlinCompilerIntegration
 
     fun testInternalFromFriendModuleFir() {
         val library = compileLibrary("library")
-        compileKotlin("source.kt", tmpdir, listOf(library), additionalOptions = listOf("-Xfriend-paths=${library.path}", "-Xuse-k2"))
+        compileKotlin("source.kt", tmpdir, listOf(library), additionalOptions = listOf("-Xfriend-paths=${library.path}", "-language-version", "2.0"))
     }
 
     fun testJvmDefaultClashWithOld() {
@@ -625,20 +625,20 @@ class CompileKotlinAgainstCustomBinariesTest : AbstractKotlinCompilerIntegration
     }
 
     fun testFirAgainstFir() {
-        val library = compileLibrary("library", additionalOptions = listOf("-Xuse-k2"))
-        compileKotlin("source.kt", tmpdir, listOf(library), additionalOptions = listOf("-Xuse-k2"))
+        val library = compileLibrary("library", additionalOptions = listOf("-language-version", "2.0"))
+        compileKotlin("source.kt", tmpdir, listOf(library), additionalOptions = listOf("-language-version", "2.0"))
     }
 
     fun testFirAgainstOldJvm() {
         val library = compileLibrary("library")
-        compileKotlin("source.kt", tmpdir, listOf(library), additionalOptions = listOf("-Xuse-k2"))
+        compileKotlin("source.kt", tmpdir, listOf(library), additionalOptions = listOf("-language-version", "2.0"))
     }
 
     fun testFirIncorrectJavaSignature() {
         compileKotlin(
             "source.kt", tmpdir,
             listOf(),
-            additionalOptions = listOf("-Xuse-k2"),
+            additionalOptions = listOf("-language-version", "2.0"),
             additionalSources = listOf("A.java", "B.java"),
         )
     }
@@ -647,7 +647,7 @@ class CompileKotlinAgainstCustomBinariesTest : AbstractKotlinCompilerIntegration
         compileKotlin(
             "source.kt", tmpdir,
             listOf(),
-            additionalOptions = listOf("-Xuse-k2"),
+            additionalOptions = listOf("-language-version", "2.0"),
             additionalSources = listOf("A.java", "B.java"),
         )
     }
@@ -661,10 +661,10 @@ class CompileKotlinAgainstCustomBinariesTest : AbstractKotlinCompilerIntegration
     }
 
     fun testOldJvmAgainstFir() {
-        val library = compileLibrary("library", additionalOptions = listOf("-Xuse-k2"))
+        val library = compileLibrary("library", additionalOptions = listOf("-language-version", "2.0"))
         compileKotlin("source.kt", tmpdir, listOf(library))
 
-        val library2 = compileLibrary("library", additionalOptions = listOf("-Xuse-k2", "-Xabi-stability=unstable"))
+        val library2 = compileLibrary("library", additionalOptions = listOf("-language-version", "2.0", "-Xabi-stability=unstable"))
         compileKotlin("source.kt", tmpdir, listOf(library2))
     }
 
@@ -674,13 +674,13 @@ class CompileKotlinAgainstCustomBinariesTest : AbstractKotlinCompilerIntegration
     }
 
     fun testOldJvmAgainstFirWithStableAbi() {
-        val library = compileLibrary("library", additionalOptions = listOf("-Xuse-k2", "-Xabi-stability=stable"))
+        val library = compileLibrary("library", additionalOptions = listOf("-language-version", "2.0", "-Xabi-stability=stable"))
         compileKotlin("source.kt", tmpdir, listOf(library))
     }
 
     fun testOldJvmAgainstFirWithAllowUnstableDependencies() {
-        val library = compileLibrary("library", additionalOptions = listOf("-Xuse-k2"))
-        compileKotlin("source.kt", tmpdir, listOf(library), additionalOptions = listOf("-Xallow-unstable-dependencies"))
+        val library = compileLibrary("library", additionalOptions = listOf("-language-version", "2.0"))
+        compileKotlin("source.kt", tmpdir, listOf(library), additionalOptions = listOf("-Xallow-unstable-dependencies", "-Xskip-metadata-version-check"))
     }
 
     fun testSealedClassesAndInterfaces() {

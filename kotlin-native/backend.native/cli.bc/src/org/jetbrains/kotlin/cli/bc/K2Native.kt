@@ -64,7 +64,8 @@ class K2Native : CLICompiler<K2NativeCompilerArguments>() {
         val project = environment.project
         val messageCollector = configuration.get(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY) ?: MessageCollector.NONE
         if (configuration.getBoolean(CommonConfigurationKeys.USE_FIR)) {
-            messageCollector.report(ERROR, "K2 does not support Native target right now")
+            messageCollector.report(ERROR, "Native target is not yet supported in language version 2.0.\n" +
+                    "Please use language version 1.* (e.g. 1.9) instead")
             return ExitCode.COMPILATION_ERROR
         }
         configuration.put(CLIConfigurationKeys.FLEXIBLE_PHASE_CONFIG, createFlexiblePhaseConfig(arguments))

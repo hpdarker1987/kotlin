@@ -85,11 +85,6 @@ object FirKotlinToJvmBytecodeCompiler {
     ): Boolean {
         val performanceManager = projectConfiguration.get(CLIConfigurationKeys.PERF_MANAGER)
 
-        messageCollector.report(
-            STRONG_WARNING,
-            "ATTENTION!\n This build uses experimental K2 compiler: \n  -Xuse-k2"
-        )
-
         val notSupportedPlugins = mutableListOf<String?>().apply {
             projectConfiguration.get(ComponentRegistrar.PLUGIN_COMPONENT_REGISTRARS).collectIncompatiblePluginNamesTo(this, ComponentRegistrar::supportsK2)
             projectConfiguration.get(CompilerPluginRegistrar.COMPILER_PLUGIN_REGISTRARS).collectIncompatiblePluginNamesTo(this, CompilerPluginRegistrar::supportsK2)
@@ -99,9 +94,9 @@ object FirKotlinToJvmBytecodeCompiler {
             messageCollector.report(
                 CompilerMessageSeverity.ERROR,
                 """
-                    |There are some plugins incompatible with K2 compiler:
+                    |There are some plugins incompatible with language version 2.0:
                     |${notSupportedPlugins.joinToString(separator = "\n|") { "  $it" }}
-                    |Please remove -Xuse-k2
+                    |Please use language version 1.* (e.g. 1.9)
                 """.trimMargin()
             )
             return false
@@ -109,7 +104,7 @@ object FirKotlinToJvmBytecodeCompiler {
         if (projectConfiguration.languageVersionSettings.supportsFeature(LanguageFeature.MultiPlatformProjects)) {
             messageCollector.report(
                 CompilerMessageSeverity.ERROR,
-                "K2 compiler does not support multi-platform projects yet, so please remove -Xuse-k2 flag"
+                "Multi-platform projects are not yet supported in language version 2.0, please use 1.* (e.g. 1.9) instead"
             )
             return false
         }
