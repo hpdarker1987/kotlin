@@ -3,20 +3,12 @@
  * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
-package kotlin
+package kotlin.wasm
 
 /**
- * Implements annotated function in JavaScript and automatically imports is to Wasm.
- * [code] string must contain JS expression that evaluates to JS function with signature that matches annotated kotlin function
- *
- * For example, a function that adds two Doubles via JS:
- *
- *      @JsFun("(x, y) => x + y")
- *      fun jsAdd(x: Double, y: Double): Double =
- *          error("...")
- *
+ * When applied to parameter or return types of an external function, forces them not to use JS interop adapters.
  * This is a temporary annotation because K/Wasm <-> JS interop is not designed yet.
  */
-@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
+@Target(AnnotationTarget.TYPE)
 @Retention(AnnotationRetention.BINARY)
-public annotation class JsFun(val code: String)
+public annotation class WasmInterop()
