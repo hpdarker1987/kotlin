@@ -12,7 +12,7 @@ import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.util.Computable
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiJavaModule
-import org.jetbrains.kotlin.load.kotlin.KotlinClassFinder
+import org.jetbrains.kotlin.config.LanguageVersion
 import java.lang.ref.WeakReference
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -59,8 +59,19 @@ class KotlinBinaryClassCache : Disposable {
     }
 
     companion object {
+        @Deprecated(
+            "Please pass languageVersion explicitly",
+            ReplaceWith(
+                "getKotlinBinaryClassOrClassFileContent(file, LanguageVersion.LATEST_STABLE, fileContent = fileContent)",
+                "org.jetbrains.kotlin.config.LanguageVersion"
+            )
+        )
         fun getKotlinBinaryClassOrClassFileContent(
-            file: VirtualFile, fileContent: ByteArray? = null
+            file: VirtualFile, fileContent: ByteArray?
+        ) = getKotlinBinaryClassOrClassFileContent(file, languageVersion = LanguageVersion.LATEST_STABLE, fileContent = fileContent)
+
+        fun getKotlinBinaryClassOrClassFileContent(
+            file: VirtualFile, languageVersion: LanguageVersion, fileContent: ByteArray? = null
         ): KotlinClassFinder.Result? {
             if (file.extension != JavaClassFileType.INSTANCE.defaultExtension &&
                 file.fileType !== JavaClassFileType.INSTANCE
@@ -76,7 +87,7 @@ class KotlinBinaryClassCache : Disposable {
             }
 
             val aClass = ApplicationManager.getApplication().runReadAction(Computable {
-                VirtualFileKotlinClass.create(file, fileContent)
+                VirtualFileKotlinClass.create(file, languageVersion, fileContent)
             })
 
             return requestCache.cache(file, aClass)

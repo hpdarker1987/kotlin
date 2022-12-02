@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.resolve.jvm.multiplatform
 
+import org.jetbrains.kotlin.config.LanguageVersion
 import org.jetbrains.kotlin.config.LanguageVersionSettings
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.impl.PackageFragmentDescriptorImpl
@@ -97,7 +98,7 @@ class OptionalAnnotationPackageFragmentProvider(
 private class OptionalAnnotationClassDataFinder(classes: List<ClassData>) : ClassDataFinder {
     val classIdToData = classes.associateBy { (nameResolver, klass) -> nameResolver.getClassId(klass.fqName) }
 
-    override fun findClassData(classId: ClassId): ClassData? = classIdToData[classId]
+    override fun findClassData(classId: ClassId, languageVersion: LanguageVersion): ClassData? = classIdToData[classId]
 }
 
 private class PackageFragmentForOptionalAnnotations(

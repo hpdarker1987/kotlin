@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.load.kotlin
 
 import org.jetbrains.kotlin.SpecialJvmAnnotations
+import org.jetbrains.kotlin.config.LanguageVersion
 import org.jetbrains.kotlin.descriptors.SourceElement
 import org.jetbrains.kotlin.load.java.JvmAbi
 import org.jetbrains.kotlin.metadata.ProtoBuf
@@ -220,7 +221,8 @@ abstract class AbstractBinaryClassAnnotationLoader<A : Any, S : AbstractBinaryCl
             checkNotNull(isConst) { "isConst should not be null for property (container=$container)" }
             if (container is ProtoContainer.Class && container.kind == ProtoBuf.Class.Kind.INTERFACE) {
                 return kotlinClassFinder.findKotlinClass(
-                    container.classId.createNestedClassId(Name.identifier(JvmAbi.DEFAULT_IMPLS_CLASS_NAME))
+                    container.classId.createNestedClassId(Name.identifier(JvmAbi.DEFAULT_IMPLS_CLASS_NAME)),
+                    LanguageVersion.LATEST_STABLE
                 )
             }
             if (isConst && container is ProtoContainer.Package) {
@@ -228,7 +230,10 @@ abstract class AbstractBinaryClassAnnotationLoader<A : Any, S : AbstractBinaryCl
                 val facadeClassName = (container.source as? JvmPackagePartSource)?.facadeClassName
                 if (facadeClassName != null) {
                     // Converting '/' to '.' is fine here because the facade class has a top level ClassId
-                    return kotlinClassFinder.findKotlinClass(ClassId.topLevel(FqName(facadeClassName.internalName.replace('/', '.'))))
+                    return kotlinClassFinder.findKotlinClass(
+                        ClassId.topLevel(FqName(facadeClassName.internalName.replace('/', '.'))),
+                        LanguageVersion.LATEST_STABLE
+                    )
                 }
             }
         }
@@ -248,7 +253,7 @@ abstract class AbstractBinaryClassAnnotationLoader<A : Any, S : AbstractBinaryCl
             val jvmPackagePartSource = container.source as JvmPackagePartSource
 
             return jvmPackagePartSource.knownJvmBinaryClass
-                ?: kotlinClassFinder.findKotlinClass(jvmPackagePartSource.classId)
+                ?: kotlinClassFinder.findKotlinClass(jvmPackagePartSource.classId, LanguageVersion.LATEST_STABLE)
         }
         return null
     }
@@ -290,7 +295,7 @@ abstract class AbstractBinaryClassAnnotationLoader<A : Any, S : AbstractBinaryCl
             classId.shortClassName.asString() != JvmAbi.REPEATABLE_ANNOTATION_CONTAINER_NAME
         ) return false
 
-        val klass = kotlinClassFinder.findKotlinClass(classId)
+        val klass = kotlinClassFinder.findKotlinClass(classId, LanguageVersion.LATEST_STABLE)
         return klass != null && SpecialJvmAnnotations.isAnnotatedWithContainerMetaAnnotation(klass)
     }
 

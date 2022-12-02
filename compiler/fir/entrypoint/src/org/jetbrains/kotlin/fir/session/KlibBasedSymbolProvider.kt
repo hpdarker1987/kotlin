@@ -114,7 +114,7 @@ class KlibBasedSymbolProvider(
                 )
 
                 val finder = KlibMetadataClassDataFinder(fragment, nameResolver)
-                val classProto = finder.findClassData(classId)?.classProto ?: continue
+                val classProto = finder.findClassData(classId, session.languageVersionSettings.languageVersion)?.classProto ?: continue
 
                 val moduleData = moduleDataProvider.getModuleData(libraryPath) ?: return null
 

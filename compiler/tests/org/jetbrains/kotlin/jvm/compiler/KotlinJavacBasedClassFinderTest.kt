@@ -20,6 +20,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
 import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
+import org.jetbrains.kotlin.config.LanguageVersion
 import org.jetbrains.kotlin.javac.JavacWrapper
 import org.jetbrains.kotlin.javac.components.JavacBasedClassFinder
 import org.jetbrains.kotlin.load.kotlin.VirtualFileFinder
@@ -66,7 +67,7 @@ class KotlinJavacBasedClassFinderTest : KotlinTestWithEnvironmentManagement() {
         val found = classFinder.findClass(classId)
         assertNotNull(found, "Class not found for $className")
 
-        val binaryClass = VirtualFileFinder.SERVICE.getInstance(project).findKotlinClass(found)
+        val binaryClass = VirtualFileFinder.SERVICE.getInstance(project).findKotlinClass(found, LanguageVersion.LATEST_STABLE)
         assertNotNull(binaryClass, "No binary class for $className")
 
         assertEquals("test/A.B.C", binaryClass.classId.toString())

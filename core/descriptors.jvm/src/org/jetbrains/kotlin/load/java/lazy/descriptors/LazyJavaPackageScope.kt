@@ -16,6 +16,7 @@
 
 package org.jetbrains.kotlin.load.java.lazy.descriptors
 
+import org.jetbrains.kotlin.config.LanguageVersion
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.descriptors.PropertyDescriptor
@@ -49,6 +50,10 @@ class LazyJavaPackageScope(
         c.components.finder.knownClassNamesInPackage(ownerDescriptor.fqName)
     }
 
+    private val languageVersion: LanguageVersion
+        get() = c.components.deserializedDescriptorResolver.components.configuration.languageVersion
+
+
     private val classes =
         c.storageManager.createMemoizedFunctionWithNullableValues<FindClassRequest, ClassDescriptor> classByRequest@{ request ->
             val requestClassId = ClassId(ownerDescriptor.fqName, request.name)
@@ -56,9 +61,9 @@ class LazyJavaPackageScope(
             val kotlinClassOrClassFileContent =
                 // These branches should be semantically equal, but the first one could be faster
                 if (request.javaClass != null)
-                    c.components.kotlinClassFinder.findKotlinClassOrContent(request.javaClass)
+                    c.components.kotlinClassFinder.findKotlinClassOrContent(request.javaClass, languageVersion)
                 else
-                    c.components.kotlinClassFinder.findKotlinClassOrContent(requestClassId)
+                    c.components.kotlinClassFinder.findKotlinClassOrContent(requestClassId, languageVersion)
 
             val kotlinBinaryClass = kotlinClassOrClassFileContent?.toKotlinJvmBinaryClass()
 
@@ -84,8 +89,8 @@ class LazyJavaPackageScope(
                             "Couldn't find kotlin binary class for light class created by kotlin binary file\n" +
                                     "JavaClass: $javaClass\n" +
                                     "ClassId: $requestClassId\n" +
-                                    "findKotlinClass(JavaClass) = ${c.components.kotlinClassFinder.findKotlinClass(javaClass)}\n" +
-                                    "findKotlinClass(ClassId) = ${c.components.kotlinClassFinder.findKotlinClass(requestClassId)}\n"
+                                    "findKotlinClass(JavaClass) = ${c.components.kotlinClassFinder.findKotlinClass(javaClass, languageVersion)}\n" +
+                                    "findKotlinClass(ClassId) = ${c.components.kotlinClassFinder.findKotlinClass(requestClassId, languageVersion)}\n"
                         )
                     }
 

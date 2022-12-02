@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.analysis.decompiler.stub.file
 
 import com.intellij.openapi.diagnostic.Logger
+import org.jetbrains.kotlin.config.LanguageVersion
 import org.jetbrains.kotlin.load.kotlin.KotlinJvmBinarySourceElement
 import org.jetbrains.kotlin.load.kotlin.findKotlinClass
 import org.jetbrains.kotlin.metadata.jvm.deserialization.JvmProtoBufUtil
@@ -17,8 +18,8 @@ class DirectoryBasedDataFinder(
     val classFinder: DirectoryBasedClassFinder,
     val log: Logger
 ) : ClassDataFinder {
-    override fun findClassData(classId: ClassId): ClassData? {
-        val binaryClass = classFinder.findKotlinClass(classId) ?: return null
+    override fun findClassData(classId: ClassId, languageVersion: LanguageVersion): ClassData? {
+        val binaryClass = classFinder.findKotlinClass(classId, languageVersion) ?: return null
         val classHeader = binaryClass.classHeader
         val data = classHeader.data
         if (data == null) {

@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.library.metadata
 
+import org.jetbrains.kotlin.config.LanguageVersion
 import org.jetbrains.kotlin.descriptors.SourceElement
 import org.jetbrains.kotlin.metadata.ProtoBuf.PackageFragment
 import org.jetbrains.kotlin.metadata.deserialization.NameResolver
@@ -19,7 +20,7 @@ class KlibMetadataClassDataFinder(
 ) : ClassDataFinder {
     val nameList = fragment.getExtension(KlibMetadataProtoBuf.className).orEmpty()
 
-    override fun findClassData(classId: ClassId): ClassData? {
+    override fun findClassData(classId: ClassId, languageVersion: LanguageVersion): ClassData? {
 
         val index = nameList.indexOfFirst { nameResolver.getClassId(it) == classId }
         if (index == -1) {

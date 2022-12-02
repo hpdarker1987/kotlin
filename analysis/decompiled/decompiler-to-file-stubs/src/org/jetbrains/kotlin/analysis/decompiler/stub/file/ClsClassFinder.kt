@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.analysis.decompiler.stub.file
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.ClassFileViewProvider
+import org.jetbrains.kotlin.config.LanguageVersion
 import org.jetbrains.kotlin.load.kotlin.KotlinJvmBinaryClass
 import org.jetbrains.kotlin.load.kotlin.findKotlinClass
 import org.jetbrains.kotlin.load.kotlin.header.KotlinClassHeader
@@ -20,7 +21,10 @@ object ClsClassFinder {
         val partsFinder = DirectoryBasedClassFinder(file.parent!!, packageFqName)
 
         return partNames.mapNotNull {
-            partsFinder.findKotlinClass(ClassId(packageFqName, Name.identifier(it.substringAfterLast('/'))))
+            partsFinder.findKotlinClass(
+                ClassId(packageFqName, Name.identifier(it.substringAfterLast('/'))),
+                LanguageVersion.LATEST_STABLE
+            )
         }
     }
 

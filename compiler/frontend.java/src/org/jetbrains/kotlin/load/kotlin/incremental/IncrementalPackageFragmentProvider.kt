@@ -16,6 +16,7 @@
 
 package org.jetbrains.kotlin.load.kotlin.incremental
 
+import org.jetbrains.kotlin.config.LanguageVersion
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.descriptors.PackageFragmentDescriptor
 import org.jetbrains.kotlin.descriptors.PackageFragmentProviderOptimized
@@ -94,7 +95,10 @@ class IncrementalPackageFragmentProvider(
 
                         val partName = JvmClassName.byInternalName(internalName)
                         val jvmBinaryClass =
-                            kotlinClassFinder.findKotlinClass(ClassId.topLevel(partName.fqNameForTopLevelClassMaybeWithDollars))
+                            kotlinClassFinder.findKotlinClass(
+                                ClassId.topLevel(partName.fqNameForTopLevelClassMaybeWithDollars),
+                                deserializationComponents.configuration.languageVersion
+                            )
 
                         val metadataVersion =
                             jvmBinaryClass?.classHeader?.metadataVersion

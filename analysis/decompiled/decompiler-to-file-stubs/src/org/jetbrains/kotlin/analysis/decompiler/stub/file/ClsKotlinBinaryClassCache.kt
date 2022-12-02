@@ -13,6 +13,7 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileWithId
 import com.intellij.reference.SoftReference
+import org.jetbrains.kotlin.config.LanguageVersion
 import org.jetbrains.kotlin.load.kotlin.KotlinBinaryClassCache
 import org.jetbrains.kotlin.load.kotlin.KotlinJvmBinaryClass
 import org.jetbrains.kotlin.load.kotlin.header.KotlinClassHeader
@@ -63,7 +64,9 @@ class ClsKotlinBinaryClassCache {
     ): KotlinJvmBinaryClass? {
         if (ModelBranch.getFileBranch(file) != null) return null
         val classFileContent = try {
-            KotlinBinaryClassCache.getKotlinBinaryClassOrClassFileContent(file, fileContent)
+            KotlinBinaryClassCache.getKotlinBinaryClassOrClassFileContent(
+                file, languageVersion = LanguageVersion.LATEST_STABLE, fileContent = fileContent
+            )
         } catch (e: Exception) {
             if (e is ControlFlowException) throw e
             return null

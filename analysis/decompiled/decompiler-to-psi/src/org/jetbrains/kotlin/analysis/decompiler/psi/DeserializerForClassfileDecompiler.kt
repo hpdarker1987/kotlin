@@ -72,7 +72,9 @@ class DeserializerForClassfileDecompiler(
         assert(packageFqName == directoryPackageFqName) {
             "Was called for $facadeFqName; only members of $directoryPackageFqName package are expected."
         }
-        val binaryClassForPackageClass = classFinder.findKotlinClass(ClassId.topLevel(facadeFqName))
+        val binaryClassForPackageClass = classFinder.findKotlinClass(
+            ClassId.topLevel(facadeFqName), deserializationComponents.configuration.languageVersion
+        )
         val header = binaryClassForPackageClass?.classHeader
         val annotationData = header?.data
         val strings = header?.strings

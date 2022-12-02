@@ -25,6 +25,7 @@ import org.jetbrains.kotlin.fir.deserialization.FirBuiltinAnnotationDeserializer
 import org.jetbrains.kotlin.fir.deserialization.FirConstDeserializer
 import org.jetbrains.kotlin.fir.deserialization.FirDeserializationContext
 import org.jetbrains.kotlin.fir.deserialization.deserializeClassToSymbol
+import org.jetbrains.kotlin.fir.languageVersionSettings
 import org.jetbrains.kotlin.fir.resolve.defaultType
 import org.jetbrains.kotlin.fir.resolve.providers.FirSymbolProvider
 import org.jetbrains.kotlin.fir.resolve.providers.FirSymbolProviderInternals
@@ -126,7 +127,7 @@ open class FirBuiltinSymbolProvider(
         private val lookup = moduleData.session.firCachesFactory.createCacheWithPostCompute(
             { classId: ClassId, context: FirDeserializationContext? -> FirRegularClassSymbol(classId) to context }
         ) { classId, symbol, parentContext ->
-            val classData = classDataFinder.findClassData(classId)!!
+            val classData = classDataFinder.findClassData(classId, moduleData.session.languageVersionSettings.languageVersion)!!
             val classProto = classData.classProto
 
             deserializeClassToSymbol(

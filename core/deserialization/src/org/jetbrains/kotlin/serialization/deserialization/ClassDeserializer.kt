@@ -41,7 +41,7 @@ class ClassDeserializer(private val components: DeserializationComponents) {
         if (classId in BLACK_LIST) return null
 
         val (nameResolver, classProto, metadataVersion, sourceElement) = key.classData
-            ?: components.classDataFinder.findClassData(classId)
+            ?: components.classDataFinder.findClassData(classId, components.configuration.languageVersion)
             ?: return null
 
         val outerClassId = classId.outerClassId

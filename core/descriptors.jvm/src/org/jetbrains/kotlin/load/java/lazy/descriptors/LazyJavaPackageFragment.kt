@@ -39,10 +39,12 @@ class LazyJavaPackageFragment(
 ) : PackageFragmentDescriptorImpl(outerContext.module, jPackage.fqName) {
     private val c = outerContext.childForClassOrPackage(this)
 
+    private val languageVersion = outerContext.components.deserializedDescriptorResolver.components.configuration.languageVersion
+
     internal val binaryClasses by c.storageManager.createLazyValue {
         c.components.packagePartProvider.findPackageParts(fqName.asString()).mapNotNull { partName ->
             val classId = ClassId.topLevel(JvmClassName.byInternalName(partName).fqNameForTopLevelClassMaybeWithDollars)
-            c.components.kotlinClassFinder.findKotlinClass(classId)?.let { partName to it }
+            c.components.kotlinClassFinder.findKotlinClass(classId, languageVersion)?.let { partName to it }
         }.toMap()
     }
 

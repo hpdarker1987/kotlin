@@ -21,6 +21,7 @@ import com.intellij.psi.search.GlobalSearchScope
 import org.jetbrains.kotlin.asJava.classes.KtLightClass
 import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
+import org.jetbrains.kotlin.config.LanguageVersion
 import org.jetbrains.kotlin.load.java.structure.impl.JavaClassImpl
 import org.jetbrains.kotlin.load.kotlin.VirtualFileFinder
 import org.jetbrains.kotlin.load.kotlin.findKotlinClass
@@ -49,7 +50,7 @@ class KotlinClassFinderTest : KotlinTestWithEnvironmentManagement() {
     fun testNestedClass() {
         val tmpdir = KotlinTestUtils.tmpDirForTest(this)
         KotlinTestUtils.compileKotlinWithJava(
-                listOf(), listOf(File("compiler/testData/kotlinClassFinder/nestedClass.kt")), tmpdir, testRootDisposable, null
+            listOf(), listOf(File("compiler/testData/kotlinClassFinder/nestedClass.kt")), tmpdir, testRootDisposable, null
         )
 
         val environment = createEnvironment(tmpdir)
@@ -60,7 +61,9 @@ class KotlinClassFinderTest : KotlinTestWithEnvironmentManagement() {
         assertNotNull(psiClass, "Psi class not found for $className")
         assertTrue(psiClass !is KtLightClass, "Kotlin light classes are not not expected")
 
-        val binaryClass = VirtualFileFinder.SERVICE.getInstance(project).findKotlinClass(JavaClassImpl(psiClass))
+        val binaryClass = VirtualFileFinder.SERVICE.getInstance(project).findKotlinClass(
+            JavaClassImpl(psiClass), LanguageVersion.LATEST_STABLE
+        )
         assertNotNull(binaryClass, "No binary class for $className")
 
         assertEquals("test/A.B.C", binaryClass.classId.toString())

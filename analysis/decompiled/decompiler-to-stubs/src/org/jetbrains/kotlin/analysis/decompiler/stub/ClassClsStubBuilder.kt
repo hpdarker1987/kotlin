@@ -8,6 +8,7 @@ import com.intellij.psi.stubs.StubElement
 import org.jetbrains.kotlin.analysis.decompiler.stub.flags.*
 import org.jetbrains.kotlin.builtins.StandardNames
 import org.jetbrains.kotlin.builtins.isNumberedFunctionClassFqName
+import org.jetbrains.kotlin.config.LanguageVersion
 import org.jetbrains.kotlin.descriptors.SourceElement
 import org.jetbrains.kotlin.lexer.KtModifierKeywordToken
 import org.jetbrains.kotlin.lexer.KtTokens
@@ -251,7 +252,7 @@ private class ClassClsStubBuilder(
 
     private fun createNestedClassStub(classBody: StubElement<out PsiElement>, nestedClassId: ClassId) {
         val (nameResolver, classProto, _, sourceElement) =
-            c.components.classDataFinder.findClassData(nestedClassId)
+            c.components.classDataFinder.findClassData(nestedClassId, LanguageVersion.LATEST_STABLE)
                 ?: c.components.virtualFileForDebug.let { rootFile ->
                     val outerClassId = nestedClassId.outerClassId
                     val sortedChildren = rootFile.parent.children.sortedBy { it.name }
