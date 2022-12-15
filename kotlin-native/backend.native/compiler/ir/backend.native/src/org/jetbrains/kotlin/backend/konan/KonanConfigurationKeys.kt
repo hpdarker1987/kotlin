@@ -158,6 +158,7 @@ class KonanConfigKeys {
         val TEST_DUMP_OUTPUT_PATH: CompilerConfigurationKey<String?> = CompilerConfigurationKey.create("path to a file to dump the list of all available tests")
         val OMIT_FRAMEWORK_BINARY: CompilerConfigurationKey<Boolean> = CompilerConfigurationKey.create("do not generate binary in framework")
         val FORCE_COMPILER_DRIVER: CompilerConfigurationKey<String?> = CompilerConfigurationKey.create("explicitly pick compiler driver")
+        val XCTEST_RUNNER: CompilerConfigurationKey<Boolean> = CompilerConfigurationKey.create("generate xctest bundle")
     }
 }
 

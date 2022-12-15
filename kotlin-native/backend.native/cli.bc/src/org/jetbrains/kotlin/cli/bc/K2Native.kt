@@ -370,6 +370,7 @@ class K2Native : CLICompiler<K2NativeCompilerArguments>() {
                 put(PARTIAL_LINKAGE, arguments.partialLinkage)
                 put(OMIT_FRAMEWORK_BINARY, arguments.omitFrameworkBinary)
                 putIfNotNull(FORCE_COMPILER_DRIVER, arguments.forceCompilerDriver)
+                put(XCTEST_RUNNER, arguments.xcTestRunner)
             }
         }
     }
