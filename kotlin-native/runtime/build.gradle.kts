@@ -12,6 +12,8 @@ import org.jetbrains.kotlin.library.KLIB_PROPERTY_NATIVE_TARGETS
 import org.jetbrains.kotlin.konan.file.File as KFile
 import org.jetbrains.kotlin.konan.target.Architecture as TargetArchitecture
 
+import java.io.ByteArrayOutputStream
+
 // These properties are used by the 'konan' plugin, thus we set them before applying it.
 val distDir: File by project
 val konanHome: String by extra(distDir.absolutePath)
@@ -34,6 +36,45 @@ googletest {
 
 val hostName: String by project
 val targetList: List<String> by project
+
+/**
+ * By default, K/N includes only SDKs frameworks. It's required to get Library frameworks path
+ * where `XCTest.framework` is located.
+ */
+fun targetPlatform(platform: String): String {
+    val out = ByteArrayOutputStream()
+    val err = ByteArrayOutputStream()
+    val result = project.exec {
+        executable = "/usr/bin/xcrun"
+        args = listOf("--sdk", platform, "--show-sdk-platform-path")
+        standardOutput = out
+        errorOutput = err
+    }
+
+    check(result.exitValue == 0) {
+        buildString {
+            append("/usr/bin/xcrun ended unsuccessfully. Exit code: ${result.exitValue}")
+            append(out)
+            append(err)
+        }
+    }
+
+    return out.toString().trim()
+}
+
+/**
+ * Double laziness: lazily create functions that execute xcrun and return
+ * path to the Developer frameworks.
+ */
+val developerFrameworks: Map<KonanTarget, () -> String> by lazy {
+    platformManager.targetValues
+            .filter { it.family.isAppleFamily }
+            .associateWith { target ->
+                val configurable = platformManager.platform(target).configurables as AppleConfigurables
+                val platform = configurable.platformName().toLowerCase()
+                fun(): String = "${targetPlatform(platform)}/Developer/Library/Frameworks/"
+            }
+}
 
 bitcode {
     allTargets {
@@ -119,6 +160,17 @@ bitcode {
 
         module("launcher") {
             headersDirs.from(files("src/main/cpp"))
+        }
+
+        module("xctest") {
+            // Needs header XCTest.h from the framework
+            compilerArgs.set(listOfNotNull(
+                    "-iframework",
+                    developerFrameworks[target]?.let { it() }
+            ))
+            headersDirs.from(files("src/main/cpp"))
+
+            onlyIf { target.family.isAppleFamily }
         }
 
         module("debug") {
