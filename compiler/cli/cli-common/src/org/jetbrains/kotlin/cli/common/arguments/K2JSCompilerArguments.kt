@@ -349,7 +349,7 @@ class K2JSCompilerArguments : CommonCompilerArguments() {
     var legacyDeprecatedNoWarn: Boolean by FreezableVar(false)
 
     val isUsageOfOldCompilerForced: Boolean
-        get() = System.getProperty("old.js.compiler.isRequired") == "true"
+        get() = System.getProperty("kotlin.js.compiler.legacy.force_enabled") == "true"
 
     private fun MessageCollector.deprecationWarn(value: Boolean, defaultValue: Boolean, name: String) {
         if (value != defaultValue) {
@@ -365,7 +365,7 @@ class K2JSCompilerArguments : CommonCompilerArguments() {
         collector.deprecationWarn(irBaseClassInMetadata, false, "-Xir-base-class-in-metadata")
         collector.deprecationWarn(irNewIr2Js, true, "-Xir-new-ir2js")
 
-        if (languageVersion >= LanguageVersion.KOTLIN_1_9) {
+        if (languageVersion >= LanguageVersion.KOTLIN_1_9 && !isUsageOfOldCompilerForced) {
             collector.deprecationWarn(legacyDeprecatedNoWarn, false, "-Xlegacy-deprecated-no-warn")
             collector.deprecationWarn(useDeprecatedLegacyCompiler, false, "-Xuse-deprecated-legacy-compiler")
         }

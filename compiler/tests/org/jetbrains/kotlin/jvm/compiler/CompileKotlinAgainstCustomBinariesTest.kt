@@ -138,7 +138,7 @@ class CompileKotlinAgainstCustomBinariesTest : AbstractKotlinCompilerIntegration
 
         if (compiler is K2JSCompiler) {
             // TODO: It will be deleted after all of our internal vendors will use the new Kotlin/JS compiler
-            System.setProperty("old.js.compiler.isRequired", "true")
+            System.setProperty("kotlin.js.compiler.legacy.force_enabled", "true")
         }
 
         compileKotlin(

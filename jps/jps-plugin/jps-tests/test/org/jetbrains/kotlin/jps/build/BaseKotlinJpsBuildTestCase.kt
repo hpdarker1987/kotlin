@@ -36,7 +36,7 @@ abstract class BaseKotlinJpsBuildTestCase : JpsBuildTestCase() {
     override fun setUp() {
         super.setUp()
         System.setProperty("kotlin.jps.tests", "true")
-        System.setProperty("old.js.compiler.isRequired", "true")
+        System.setProperty("kotlin.js.compiler.legacy.force_enabled", "true")
     }
 
     override fun shouldRunTest(): Boolean {

@@ -145,7 +145,7 @@ class LauncherScriptTest : TestCaseWithTmpdir() {
             "-nowarn",
             "-Xlegacy-deprecated-no-warn",
             "-Xuse-deprecated-legacy-compiler",
-            "-Dold.js.compiler.isRequired=true",
+            "-Dkotlin.js.compiler.legacy.force_enabled=true",
             "-output",
             File(tmpdir, "out.js").path,
         )

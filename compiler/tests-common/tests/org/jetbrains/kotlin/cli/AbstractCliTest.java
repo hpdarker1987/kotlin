@@ -298,9 +298,9 @@ public abstract class AbstractCliTest extends TestCaseWithTmpdir {
     private void setupOldJsCompiler(String fileName) {
         if (fileName == null) return;
         if (!fileName.contains("_strict")) {
-            System.setProperty("old.js.compiler.isRequired", "true");
+            System.setProperty("kotlin.js.compiler.legacy.force_enabled", "true");
         } else {
-            System.setProperty("old.js.compiler.isRequired", "false");
+            System.setProperty("kotlin.js.compiler.legacy.force_enabled", "false");
         }
     }
 
