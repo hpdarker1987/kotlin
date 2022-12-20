@@ -100,13 +100,13 @@ class CompileKotlinAgainstCustomBinariesTest : AbstractKotlinCompilerIntegration
     }
 
     private fun doTestKotlinLibraryWithWrongMetadataVersionJs(libraryName: String, vararg additionalOptions: String) {
-        val library = compileJsLibrary(libraryName, additionalOptions = listOf("-Xmetadata-version=42.0.0", "-nowarn"))
+        val library = compileJsLibrary(libraryName, additionalOptions = listOf("-Xmetadata-version=42.0.0"))
         compileKotlin(
             "source.kt",
             File(tmpdir, "usage.js"),
             listOf(library),
             K2JSCompiler(),
-            additionalOptions.toList() + "-nowarn"
+            additionalOptions.toList()
         )
     }
 
@@ -370,14 +370,14 @@ class CompileKotlinAgainstCustomBinariesTest : AbstractKotlinCompilerIntegration
     }
 
     fun testRequireKotlinInNestedClassesJs() {
-        compileKotlin("source.kt", File(tmpdir, "usage.js"), listOf(compileJsLibrary("library", listOf("-nowarn"))), K2JSCompiler(), listOf("-nowarn"))
+        compileKotlin("source.kt", File(tmpdir, "usage.js"), listOf(compileJsLibrary("library")), K2JSCompiler())
     }
 
     fun testRequireKotlinInNestedClassesAgainst14Js() {
-        val library = compileJsLibrary("library", additionalOptions = listOf("-Xmetadata-version=1.4.0", "-nowarn"))
+        val library = compileJsLibrary("library", additionalOptions = listOf("-Xmetadata-version=1.4.0"))
         compileKotlin(
             "source.kt", File(tmpdir, "usage.js"), listOf(library), K2JSCompiler(),
-            additionalOptions = listOf("-Xskip-metadata-version-check", "-nowarn")
+            additionalOptions = listOf("-Xskip-metadata-version-check")
         )
     }
 
@@ -604,15 +604,14 @@ class CompileKotlinAgainstCustomBinariesTest : AbstractKotlinCompilerIntegration
         compileKotlin(
             "source.kt",
             File(tmpdir, "usage.js"),
-            listOf(compileJsLibrary("library", listOf("-nowarn"))),
+            listOf(compileJsLibrary("library")),
             K2JSCompiler(),
-            listOf("-nowarn")
         )
     }
 
     fun testInternalFromFriendModuleJs() {
-        val library = compileJsLibrary("library", listOf("-nowarn"))
-        compileKotlin("source.kt", File(tmpdir, "usage.js"), listOf(library), K2JSCompiler(), listOf("-Xfriend-modules=${library.path}", "-nowarn"))
+        val library = compileJsLibrary("library")
+        compileKotlin("source.kt", File(tmpdir, "usage.js"), listOf(library), K2JSCompiler(), listOf("-Xfriend-modules=${library.path}"))
     }
 
     /*
