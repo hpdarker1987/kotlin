@@ -11,6 +11,7 @@ import com.intellij.util.ThrowableRunnable
 import org.jetbrains.jps.model.java.JpsJavaExtensionService
 import org.jetbrains.jps.model.module.JpsModule
 import org.jetbrains.jps.util.JpsPathUtil
+import org.jetbrains.kotlin.cli.common.CompilerSystemProperties
 import org.jetbrains.kotlin.cli.common.arguments.K2JSCompilerArguments
 import org.jetbrains.kotlin.config.CompilerSettings
 import org.jetbrains.kotlin.config.KotlinFacetSettings
@@ -92,7 +93,7 @@ abstract class KotlinJpsBuildTestBase : AbstractKotlinJpsBuildTestCase() {
             facet.compilerArguments = K2JSCompilerArguments().apply {
                 useDeprecatedLegacyCompiler = true
                 // TODO: It will be deleted after all of our internal vendors will use the new Kotlin/JS compiler
-                System.setProperty("kotlin.js.compiler.legacy.force_enabled", "true")
+                CompilerSystemProperties.KOTLIN_JS_COMPILER_LEGACY_FORCE_ENABLED.value = "true"
             }
             facet.targetPlatform = JsPlatforms.defaultJsPlatform
 

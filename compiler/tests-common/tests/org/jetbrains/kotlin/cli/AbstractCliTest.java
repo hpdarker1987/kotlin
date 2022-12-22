@@ -297,11 +297,7 @@ public abstract class AbstractCliTest extends TestCaseWithTmpdir {
 
     private void setupOldJsCompiler(String fileName) {
         if (fileName == null) return;
-        if (!fileName.contains("_strict")) {
-            System.setProperty("kotlin.js.compiler.legacy.force_enabled", "true");
-        } else {
-            System.setProperty("kotlin.js.compiler.legacy.force_enabled", "false");
-        }
+        CompilerSystemProperties.KOTLIN_JS_COMPILER_LEGACY_FORCE_ENABLED.setValue(Boolean.toString(!fileName.contains("_strict")));
     }
 
     protected void doMetadataTest(@NotNull String fileName) {

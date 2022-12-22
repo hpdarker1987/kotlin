@@ -18,6 +18,7 @@ package org.jetbrains.kotlin.cli
 
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.text.StringUtil
+import org.jetbrains.kotlin.cli.common.CompilerSystemProperties
 import org.jetbrains.kotlin.cli.common.ExitCode
 import org.jetbrains.kotlin.cli.jvm.K2JVMCompiler
 import org.jetbrains.kotlin.test.KotlinTestUtils
@@ -145,7 +146,7 @@ class LauncherScriptTest : TestCaseWithTmpdir() {
             "-nowarn",
             "-Xlegacy-deprecated-no-warn",
             "-Xuse-deprecated-legacy-compiler",
-            "-Dkotlin.js.compiler.legacy.force_enabled=true",
+            "-D${CompilerSystemProperties.KOTLIN_JS_COMPILER_LEGACY_FORCE_ENABLED.property}=true",
             "-output",
             File(tmpdir, "out.js").path,
         )

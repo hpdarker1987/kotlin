@@ -169,7 +169,7 @@ abstract class AbstractJsLookupTrackerTest : AbstractLookupTrackerTest() {
             freeArgs = filesToCompile.map { it.canonicalPath }
             useDeprecatedLegacyCompiler = true
             // TODO: It will be deleted after all of our internal vendors will use the new Kotlin/JS compiler
-            System.setProperty("kotlin.js.compiler.legacy.force_enabled", "true")
+            CompilerSystemProperties.KOTLIN_JS_COMPILER_LEGACY_FORCE_ENABLED.value = "true"
         }
         configureAdditionalArgs(args)
         return runJSCompiler(args, env)

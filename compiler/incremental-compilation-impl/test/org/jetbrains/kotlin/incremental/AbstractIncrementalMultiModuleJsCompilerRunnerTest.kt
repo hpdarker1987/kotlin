@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.incremental
 
 import org.jetbrains.kotlin.build.report.ICReporter
+import org.jetbrains.kotlin.cli.common.CompilerSystemProperties
 import org.jetbrains.kotlin.cli.common.arguments.K2JSCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.incremental.multiproject.ModulesApiHistoryJs
@@ -30,7 +31,7 @@ abstract class AbstractIncrementalMultiModuleJsCompilerRunnerTest :
             metaInfo = true
             useDeprecatedLegacyCompiler = true
             // TODO: It will be deleted after all of our internal vendors will use the new Kotlin/JS compiler
-            System.setProperty("kotlin.js.compiler.legacy.force_enabled", "true")
+            CompilerSystemProperties.KOTLIN_JS_COMPILER_LEGACY_FORCE_ENABLED.value = "true"
         }
 
     override fun makeForSingleModule(
