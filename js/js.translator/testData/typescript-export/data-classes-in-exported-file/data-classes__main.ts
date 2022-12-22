@@ -9,7 +9,6 @@ function assert(condition: boolean) {
 
 function box(): string {
     assert(new TestDataClass("Test").name === "Test");
-    assert(new TestDataClass("Test").component1() === "Test");
     assert(new TestDataClass("Test").copy("NewTest").name === "NewTest");
     assert(new TestDataClass("Test").toString() === "TestDataClass(name=Test)");
 
@@ -28,9 +27,6 @@ function box(): string {
 
     assert(new KT39423("Test", 42).a === "Test")
     assert(new KT39423("Test", 42).b === 42)
-
-    assert(new KT39423("Test", 42).component1() === "Test")
-    assert(new KT39423("Test", 42).component2() === 42)
 
     assert(new KT39423("Test", 42).copy("NewTest").a === "NewTest")
     assert(new KT39423("Test", 42).copy("NewTest").b === 42)

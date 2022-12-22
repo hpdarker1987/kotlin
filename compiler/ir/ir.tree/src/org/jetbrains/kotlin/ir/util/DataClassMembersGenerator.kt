@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.ir.types.classifierOrNull
 import org.jetbrains.kotlin.ir.types.isNullable
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.platform.TargetPlatform
 import org.jetbrains.kotlin.util.OperatorNameConventions
 
 /**
@@ -36,9 +37,11 @@ abstract class DataClassMembersGenerator(
     val irClass: IrClass,
     val fqName: FqName?,
     val origin: IrDeclarationOrigin,
+    val platform: TargetPlatform?,
     val forbidDirectFieldAccess: Boolean = false,
     val generateBodies: Boolean = false
 ) {
+    private val jsExportUtils = IrJsExportUtils(platform)
     private val irPropertiesByDescriptor: Map<PropertyDescriptor, IrProperty> =
         irClass.properties.associateBy { it.descriptor }
 
@@ -308,6 +311,7 @@ abstract class DataClassMembersGenerator(
     fun generateComponentFunction(function: FunctionDescriptor, irProperty: IrProperty) {
         buildMember(function) {
             generateComponentFunction(irProperty)
+            jsExportUtils.excludeFromJsExport(it)
         }
     }
 
@@ -315,6 +319,7 @@ abstract class DataClassMembersGenerator(
     fun generateComponentFunction(irFunction: IrFunction, irProperty: IrProperty) {
         buildMember(irFunction) {
             generateComponentFunction(irProperty)
+            jsExportUtils.excludeFromJsExport(it)
         }
     }
 

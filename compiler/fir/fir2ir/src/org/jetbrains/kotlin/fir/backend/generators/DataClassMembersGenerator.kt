@@ -88,7 +88,8 @@ class DataClassMembersGenerator(val components: Fir2IrComponents) : Fir2IrCompon
             components.symbolTable,
             irClass,
             irClass.kotlinFqName,
-            origin
+            origin,
+            components.session.moduleData.platform
         ) {
             override fun declareSimpleFunction(startOffset: Int, endOffset: Int, functionDescriptor: FunctionDescriptor): IrFunction {
                 throw IllegalStateException("Not expect to see function declaration.")

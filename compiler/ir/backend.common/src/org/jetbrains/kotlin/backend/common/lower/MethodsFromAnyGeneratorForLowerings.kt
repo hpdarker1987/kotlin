@@ -59,7 +59,8 @@ open class LoweringDataClassMemberGenerator(
         irClass,
         irClass.kotlinFqName,
         origin,
-        forbidDirectFieldAccess
+        backendContext.ir.irModule.descriptor.platform,
+        forbidDirectFieldAccess,
     ) {
 
     override fun declareSimpleFunction(startOffset: Int, endOffset: Int, functionDescriptor: FunctionDescriptor): IrFunction {
