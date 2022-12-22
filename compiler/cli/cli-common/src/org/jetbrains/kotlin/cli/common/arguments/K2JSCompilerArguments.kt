@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.cli.common.arguments
 
+import org.jetbrains.kotlin.cli.common.CompilerSystemProperties
 import org.jetbrains.kotlin.cli.common.arguments.K2JsArgumentConstants.*
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -349,7 +350,7 @@ class K2JSCompilerArguments : CommonCompilerArguments() {
     var legacyDeprecatedNoWarn: Boolean by FreezableVar(false)
 
     val isUsageOfOldCompilerForced: Boolean
-        get() = System.getProperty("kotlin.js.compiler.legacy.force_enabled") == "true"
+        get() = CompilerSystemProperties.KOTLIN_JS_COMPILER_LEGACY_FORCE_ENABLED.value == "true"
 
     private fun MessageCollector.deprecationWarn(value: Boolean, defaultValue: Boolean, name: String) {
         if (value != defaultValue) {
