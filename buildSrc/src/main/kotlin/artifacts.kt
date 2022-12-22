@@ -109,22 +109,34 @@ fun Project.runtimeJar(body: Jar.() -> Unit = {}): TaskProvider<out Jar> {
     return jarTask
 }
 
-fun Project.runtimeJar(task: TaskProvider<ShadowJar>, body: ShadowJar.() -> Unit = {}): TaskProvider<out Jar> {
+fun Project.runtimeJarWithRelocation(body: ShadowJar.() -> Unit = {}): TaskProvider<out Jar> =
+    runtimeJar(tasks.register<ShadowJar>("shadowJar"), body)
+
+fun Project.runtimeJar(shadowJarTask: TaskProvider<ShadowJar>, body: ShadowJar.() -> Unit = {}): TaskProvider<out Jar> {
 
     noDefaultJar()
 
-    task.configure {
+    shadowJarTask.configure {
+        archiveClassifier.set("shadow")
         configurations = configurations + listOf(project.configurations["embedded"])
-        setupPublicJar(project.extensions.getByType<BasePluginExtension>().archivesName.get())
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         body()
     }
 
-    project.addArtifact("archives", task, task)
-    project.addArtifact("runtimeElements", task, task)
-    project.addArtifact("apiElements", task, task)
+    val runtimeJarTask = tasks.register<Jar>("runtimeJar") {
+        dependsOn(shadowJarTask)
+        from {
+            zipTree(shadowJarTask.get().outputs.files.singleFile)
+        }
+        setupPublicJar(project.extensions.getByType<BasePluginExtension>().archivesName.get())
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
 
-    return task
+    project.addArtifact("archives", runtimeJarTask, runtimeJarTask)
+    project.addArtifact("runtimeElements", runtimeJarTask, runtimeJarTask)
+    project.addArtifact("apiElements", runtimeJarTask, runtimeJarTask)
+
+    return runtimeJarTask
 }
 
 private fun Project.mainJavaPluginSourceSet() = findJavaPluginExtension()?.sourceSets?.findByName("main")
