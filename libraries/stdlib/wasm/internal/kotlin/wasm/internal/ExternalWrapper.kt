@@ -261,6 +261,9 @@ private val jsEmptyString by lazy(::getJsEmptyString)
 private val jsTrue by lazy(::getJsTrue)
 private val jsFalse by lazy(::getJsFalse)
 
+internal fun numberToDoubleAdapter(x: Number): Double =
+    x.toDouble()
+
 internal fun kotlinToJsAnyAdapter(x: Any?): ExternalInterfaceType? =
     if (x == null) null else anyToExternRef(x)
 
@@ -310,7 +313,6 @@ internal fun kotlinShortToExternRefAdapter(x: Short): ExternalInterfaceType =
 
 internal fun kotlinCharToExternRefAdapter(x: Char): ExternalInterfaceType =
     intToExternref(x.toInt())
-
 
 @JsFun("(length) => Array(length)")
 private external fun createJsArray(length: Int): ExternalInterfaceType
