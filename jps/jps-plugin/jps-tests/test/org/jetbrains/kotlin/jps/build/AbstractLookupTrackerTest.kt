@@ -11,6 +11,7 @@ import com.intellij.util.ThrowableRunnable
 import com.intellij.util.containers.Interner
 import org.jetbrains.kotlin.TestWithWorkingDir
 import org.jetbrains.kotlin.build.JvmSourceRoot
+import org.jetbrains.kotlin.cli.common.CompilerSystemProperties
 import org.jetbrains.kotlin.cli.common.ExitCode
 import org.jetbrains.kotlin.cli.common.arguments.K2JSCompilerArguments
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
