@@ -8,7 +8,7 @@ FILE fqName:<root> fileName:/Derived.kt
     PROPERTY name:a visibility:public modality:FINAL [val]
       FIELD PROPERTY_BACKING_FIELD name:a type:kotlin.String visibility:private [final]
         EXPRESSION_BODY
-          CONST String type=kotlin.String value="FAIL"
+          CONST String type=kotlin.String value="OK"
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-a> visibility:public modality:FINAL <> ($this:<root>.Derived) returnType:kotlin.String
         correspondingProperty: PROPERTY name:a visibility:public modality:FINAL [val]
         $this: VALUE_PARAMETER name:<this> type:<root>.Derived

@@ -14,5 +14,6 @@ class Derived : BaseJava() {
 fun box(): String {
     val d = Derived()
     d.a = "OK"
+    if ((d as BaseJava).a == "OK") return "FAIL (accidental shadowed field access)"
     return d.a
 }
