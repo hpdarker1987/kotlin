@@ -8,10 +8,10 @@ package org.jetbrains.kotlin.analysis.decompiler.stub.file
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.ClassFileViewProvider
-import org.jetbrains.kotlin.config.LanguageVersion
 import org.jetbrains.kotlin.load.kotlin.KotlinJvmBinaryClass
 import org.jetbrains.kotlin.load.kotlin.findKotlinClass
 import org.jetbrains.kotlin.load.kotlin.header.KotlinClassHeader
+import org.jetbrains.kotlin.metadata.jvm.deserialization.JvmMetadataVersion
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
 
@@ -23,7 +23,7 @@ object ClsClassFinder {
         return partNames.mapNotNull {
             partsFinder.findKotlinClass(
                 ClassId(packageFqName, Name.identifier(it.substringAfterLast('/'))),
-                LanguageVersion.LATEST_STABLE
+                JvmMetadataVersion.INSTANCE
             )
         }
     }

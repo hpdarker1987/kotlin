@@ -6,11 +6,11 @@
 package org.jetbrains.kotlin.analysis.decompiler.stub.file
 
 import com.intellij.openapi.vfs.VirtualFile
-import org.jetbrains.kotlin.config.LanguageVersion
 import org.jetbrains.kotlin.load.java.structure.JavaClass
 import org.jetbrains.kotlin.load.java.structure.classId
 import org.jetbrains.kotlin.load.kotlin.KotlinClassFinder
 import org.jetbrains.kotlin.load.kotlin.KotlinClassFinder.Result.KotlinClass
+import org.jetbrains.kotlin.metadata.jvm.deserialization.JvmMetadataVersion
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import java.io.InputStream
@@ -19,10 +19,10 @@ class DirectoryBasedClassFinder(
     val packageDirectory: VirtualFile,
     val directoryPackageFqName: FqName
 ) : KotlinClassFinder {
-    override fun findKotlinClassOrContent(javaClass: JavaClass, languageVersion: LanguageVersion): KotlinClassFinder.Result? =
-        findKotlinClassOrContent(javaClass.classId!!, languageVersion)
+    override fun findKotlinClassOrContent(javaClass: JavaClass, jvmMetadataVersion: JvmMetadataVersion): KotlinClassFinder.Result? =
+        findKotlinClassOrContent(javaClass.classId!!, jvmMetadataVersion)
 
-    override fun findKotlinClassOrContent(classId: ClassId, languageVersion: LanguageVersion): KotlinClassFinder.Result? {
+    override fun findKotlinClassOrContent(classId: ClassId, jvmMetadataVersion: JvmMetadataVersion): KotlinClassFinder.Result? {
         if (classId.packageFqName != directoryPackageFqName) {
             return null
         }

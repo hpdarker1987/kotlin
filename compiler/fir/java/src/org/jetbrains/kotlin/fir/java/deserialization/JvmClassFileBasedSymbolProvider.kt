@@ -64,13 +64,13 @@ class JvmClassFileBasedSymbolProvider(
             val classId = ClassId.topLevel(JvmClassName.byInternalName(partName).fqNameForTopLevelClassMaybeWithDollars)
             if (!javaFacade.hasTopLevelClassOf(classId)) return@mapNotNull null
             val (kotlinJvmBinaryClass, byteContent) = kotlinClassFinder.findKotlinClassOrContent(
-                classId, session.languageVersionSettings.languageVersion
+                classId, session.languageVersionSettings.languageVersion.toMetadataVersion()
             ) as? KotlinClassFinder.Result.KotlinClass ?: return@mapNotNull null
 
             val facadeName = kotlinJvmBinaryClass.classHeader.multifileClassName?.takeIf { it.isNotEmpty() }
             val facadeFqName = facadeName?.let { JvmClassName.byInternalName(it).fqNameForTopLevelClassMaybeWithDollars }
             val facadeBinaryClass = facadeFqName?.let {
-                kotlinClassFinder.findKotlinClass(ClassId.topLevel(it), session.languageVersionSettings.languageVersion)
+                kotlinClassFinder.findKotlinClass(ClassId.topLevel(it), session.languageVersionSettings.languageVersion.toMetadataVersion())
             }
 
             val moduleData = moduleDataProvider.getModuleData(kotlinJvmBinaryClass.containingLibrary.toPath()) ?: return@mapNotNull null
@@ -114,7 +114,9 @@ class JvmClassFileBasedSymbolProvider(
         // Kotlin classes are annotated Java classes, so this check also looks for them.
         if (!javaFacade.hasTopLevelClassOf(classId)) return null
 
-        val result = kotlinClassFinder.findKotlinClassOrContent(classId, session.languageVersionSettings.languageVersion)
+        val result = kotlinClassFinder.findKotlinClassOrContent(
+            classId, session.languageVersionSettings.languageVersion.toMetadataVersion()
+        )
         if (result !is KotlinClassFinder.Result.KotlinClass) {
             if (parentContext != null || (classId.isNestedClass && getClass(classId.outermostClassId)?.fir !is FirJavaClass)) {
                 // Nested class of Kotlin class should have been a Kotlin class.

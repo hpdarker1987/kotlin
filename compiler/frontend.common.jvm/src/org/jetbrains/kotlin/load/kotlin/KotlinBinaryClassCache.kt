@@ -13,6 +13,7 @@ import com.intellij.openapi.util.Computable
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiJavaModule
 import org.jetbrains.kotlin.config.LanguageVersion
+import org.jetbrains.kotlin.metadata.jvm.deserialization.JvmMetadataVersion
 import java.lang.ref.WeakReference
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -68,10 +69,10 @@ class KotlinBinaryClassCache : Disposable {
         )
         fun getKotlinBinaryClassOrClassFileContent(
             file: VirtualFile, fileContent: ByteArray?
-        ) = getKotlinBinaryClassOrClassFileContent(file, languageVersion = LanguageVersion.LATEST_STABLE, fileContent = fileContent)
+        ) = getKotlinBinaryClassOrClassFileContent(file, jvmMetadataVersion = JvmMetadataVersion.INSTANCE, fileContent = fileContent)
 
         fun getKotlinBinaryClassOrClassFileContent(
-            file: VirtualFile, languageVersion: LanguageVersion, fileContent: ByteArray? = null
+            file: VirtualFile, jvmMetadataVersion: JvmMetadataVersion, fileContent: ByteArray? = null
         ): KotlinClassFinder.Result? {
             if (file.extension != JavaClassFileType.INSTANCE.defaultExtension &&
                 file.fileType !== JavaClassFileType.INSTANCE
@@ -87,7 +88,7 @@ class KotlinBinaryClassCache : Disposable {
             }
 
             val aClass = ApplicationManager.getApplication().runReadAction(Computable {
-                VirtualFileKotlinClass.create(file, languageVersion, fileContent)
+                VirtualFileKotlinClass.create(file, jvmMetadataVersion, fileContent)
             })
 
             return requestCache.cache(file, aClass)

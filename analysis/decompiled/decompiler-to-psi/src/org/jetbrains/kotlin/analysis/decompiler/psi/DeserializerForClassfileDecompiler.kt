@@ -27,6 +27,7 @@ import org.jetbrains.kotlin.resolve.sam.SamConversionResolverImpl
 import org.jetbrains.kotlin.serialization.deserialization.DeserializationComponents
 import org.jetbrains.kotlin.serialization.deserialization.DeserializationConfiguration
 import org.jetbrains.kotlin.serialization.deserialization.descriptors.DeserializedPackageMemberScope
+import org.jetbrains.kotlin.utils.toMetadataVersion
 
 fun DeserializerForClassfileDecompiler(classFile: VirtualFile): DeserializerForClassfileDecompiler {
     val kotlinClassHeaderInfo =
@@ -73,7 +74,7 @@ class DeserializerForClassfileDecompiler(
             "Was called for $facadeFqName; only members of $directoryPackageFqName package are expected."
         }
         val binaryClassForPackageClass = classFinder.findKotlinClass(
-            ClassId.topLevel(facadeFqName), deserializationComponents.configuration.languageVersion
+            ClassId.topLevel(facadeFqName), deserializationComponents.configuration.languageVersion.toMetadataVersion()
         )
         val header = binaryClassForPackageClass?.classHeader
         val annotationData = header?.data

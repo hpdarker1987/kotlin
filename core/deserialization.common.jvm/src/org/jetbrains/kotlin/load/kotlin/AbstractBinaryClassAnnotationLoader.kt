@@ -6,7 +6,6 @@
 package org.jetbrains.kotlin.load.kotlin
 
 import org.jetbrains.kotlin.SpecialJvmAnnotations
-import org.jetbrains.kotlin.config.LanguageVersion
 import org.jetbrains.kotlin.descriptors.SourceElement
 import org.jetbrains.kotlin.load.java.JvmAbi
 import org.jetbrains.kotlin.metadata.ProtoBuf
@@ -14,6 +13,7 @@ import org.jetbrains.kotlin.metadata.deserialization.*
 import org.jetbrains.kotlin.metadata.jvm.JvmProtoBuf
 import org.jetbrains.kotlin.metadata.jvm.JvmProtoBuf.propertySignature
 import org.jetbrains.kotlin.metadata.jvm.deserialization.ClassMapperLite
+import org.jetbrains.kotlin.metadata.jvm.deserialization.JvmMetadataVersion
 import org.jetbrains.kotlin.metadata.jvm.deserialization.JvmProtoBufUtil
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
@@ -222,7 +222,7 @@ abstract class AbstractBinaryClassAnnotationLoader<A : Any, S : AbstractBinaryCl
             if (container is ProtoContainer.Class && container.kind == ProtoBuf.Class.Kind.INTERFACE) {
                 return kotlinClassFinder.findKotlinClass(
                     container.classId.createNestedClassId(Name.identifier(JvmAbi.DEFAULT_IMPLS_CLASS_NAME)),
-                    LanguageVersion.LATEST_STABLE
+                    JvmMetadataVersion.INSTANCE
                 )
             }
             if (isConst && container is ProtoContainer.Package) {
@@ -232,7 +232,7 @@ abstract class AbstractBinaryClassAnnotationLoader<A : Any, S : AbstractBinaryCl
                     // Converting '/' to '.' is fine here because the facade class has a top level ClassId
                     return kotlinClassFinder.findKotlinClass(
                         ClassId.topLevel(FqName(facadeClassName.internalName.replace('/', '.'))),
-                        LanguageVersion.LATEST_STABLE
+                        JvmMetadataVersion.INSTANCE
                     )
                 }
             }
@@ -253,7 +253,7 @@ abstract class AbstractBinaryClassAnnotationLoader<A : Any, S : AbstractBinaryCl
             val jvmPackagePartSource = container.source as JvmPackagePartSource
 
             return jvmPackagePartSource.knownJvmBinaryClass
-                ?: kotlinClassFinder.findKotlinClass(jvmPackagePartSource.classId, LanguageVersion.LATEST_STABLE)
+                ?: kotlinClassFinder.findKotlinClass(jvmPackagePartSource.classId, JvmMetadataVersion.INSTANCE)
         }
         return null
     }
@@ -295,7 +295,7 @@ abstract class AbstractBinaryClassAnnotationLoader<A : Any, S : AbstractBinaryCl
             classId.shortClassName.asString() != JvmAbi.REPEATABLE_ANNOTATION_CONTAINER_NAME
         ) return false
 
-        val klass = kotlinClassFinder.findKotlinClass(classId, LanguageVersion.LATEST_STABLE)
+        val klass = kotlinClassFinder.findKotlinClass(classId, JvmMetadataVersion.INSTANCE)
         return klass != null && SpecialJvmAnnotations.isAnnotatedWithContainerMetaAnnotation(klass)
     }
 
