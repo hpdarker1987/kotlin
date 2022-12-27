@@ -16,7 +16,6 @@
 
 package org.jetbrains.kotlin.serialization.deserialization
 
-import org.jetbrains.kotlin.config.LanguageVersion
 import org.jetbrains.kotlin.descriptors.SourceElement
 import org.jetbrains.kotlin.metadata.ProtoBuf
 import org.jetbrains.kotlin.metadata.deserialization.BinaryVersion
@@ -36,7 +35,7 @@ class ProtoBasedClassDataFinder(
 
     val allClassIds: Collection<ClassId> get() = classIdToProto.keys
 
-    override fun findClassData(classId: ClassId, languageVersion: LanguageVersion): ClassData? {
+    override fun findClassData(classId: ClassId): ClassData? {
         val classProto = classIdToProto[classId] ?: return null
         return ClassData(nameResolver, classProto, metadataVersion, classSource(classId))
     }

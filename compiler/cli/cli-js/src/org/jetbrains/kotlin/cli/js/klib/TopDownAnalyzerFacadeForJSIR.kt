@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.incremental.components.LookupTracker
 import org.jetbrains.kotlin.incremental.js.IncrementalDataProvider
 import org.jetbrains.kotlin.ir.backend.js.JsFactories
 import org.jetbrains.kotlin.js.analyze.AbstractTopDownAnalyzerFacadeForJS
-import org.jetbrains.kotlin.resolve.CompilerDeserializationConfiguration
+import org.jetbrains.kotlin.resolve.jvm.JvmCompilerDeserializationConfiguration
 
 // TODO: put it in separated module `frontend.js`
 object TopDownAnalyzerFacadeForJSIR : AbstractTopDownAnalyzerFacadeForJS() {
@@ -26,7 +26,7 @@ object TopDownAnalyzerFacadeForJSIR : AbstractTopDownAnalyzerFacadeForJS() {
             incrementalData.compiledPackageParts.values.map { it.metadata },
             moduleContext.storageManager,
             moduleContext.module,
-            CompilerDeserializationConfiguration(languageVersionSettings),
+            JvmCompilerDeserializationConfiguration(languageVersionSettings),
             lookupTracker
         )
     }

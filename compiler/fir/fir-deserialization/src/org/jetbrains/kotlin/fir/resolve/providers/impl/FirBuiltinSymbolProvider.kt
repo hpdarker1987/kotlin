@@ -127,7 +127,7 @@ open class FirBuiltinSymbolProvider(
         private val lookup = moduleData.session.firCachesFactory.createCacheWithPostCompute(
             { classId: ClassId, context: FirDeserializationContext? -> FirRegularClassSymbol(classId) to context }
         ) { classId, symbol, parentContext ->
-            val classData = classDataFinder.findClassData(classId, moduleData.session.languageVersionSettings.languageVersion)!!
+            val classData = classDataFinder.findClassData(classId)!!
             val classProto = classData.classProto
 
             deserializeClassToSymbol(

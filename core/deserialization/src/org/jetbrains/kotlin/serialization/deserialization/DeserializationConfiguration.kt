@@ -5,11 +5,12 @@
 
 package org.jetbrains.kotlin.serialization.deserialization
 
-import org.jetbrains.kotlin.config.LanguageVersion
+import org.jetbrains.kotlin.metadata.deserialization.BinaryVersion
 
 interface DeserializationConfiguration {
-    val languageVersion: LanguageVersion
-        get() = LanguageVersion.LATEST_STABLE
+
+    val binaryVersion: BinaryVersion?
+        get() = null
 
     val skipMetadataVersionCheck: Boolean
         get() = false

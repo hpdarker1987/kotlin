@@ -16,18 +16,17 @@
 
 package org.jetbrains.kotlin.serialization.deserialization
 
-import org.jetbrains.kotlin.config.LanguageVersion
 import org.jetbrains.kotlin.descriptors.PackageFragmentProvider
 import org.jetbrains.kotlin.descriptors.packageFragments
 import org.jetbrains.kotlin.name.ClassId
 
 class DeserializedClassDataFinder(private val packageFragmentProvider: PackageFragmentProvider) : ClassDataFinder {
-    override fun findClassData(classId: ClassId, languageVersion: LanguageVersion): ClassData? {
+    override fun findClassData(classId: ClassId): ClassData? {
         val packageFragments = packageFragmentProvider.packageFragments(classId.packageFqName)
         for (fragment in packageFragments) {
             if (fragment !is DeserializedPackageFragment) continue
 
-            fragment.classDataFinder.findClassData(classId, languageVersion)?.let { return it }
+            fragment.classDataFinder.findClassData(classId)?.let { return it }
         }
         return null
     }

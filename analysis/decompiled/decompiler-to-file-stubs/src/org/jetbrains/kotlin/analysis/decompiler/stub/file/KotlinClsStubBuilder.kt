@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.metadata.ProtoBuf
 import org.jetbrains.kotlin.metadata.deserialization.Flags
 import org.jetbrains.kotlin.metadata.deserialization.NameResolver
 import org.jetbrains.kotlin.metadata.deserialization.TypeTable
+import org.jetbrains.kotlin.metadata.jvm.deserialization.JvmMetadataVersion
 import org.jetbrains.kotlin.metadata.jvm.deserialization.JvmProtoBufUtil
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
@@ -63,7 +64,7 @@ open class KotlinClsStubBuilder : ClsStubBuilder() {
             return createIncompatibleAbiVersionFileStub()
         }
 
-        val components = createStubBuilderComponents(file, packageFqName, fileContent)
+        val components = createStubBuilderComponents(file, packageFqName, fileContent, header.metadataVersion)
         if (header.kind == KotlinClassHeader.Kind.MULTIFILE_CLASS) {
             val partFiles = ClsClassFinder.findMultifileClassParts(file, classId, header.multifilePartNames)
             return createMultifileClassStub(header, partFiles, classId.asSingleFqName(), components)
@@ -104,9 +105,14 @@ open class KotlinClsStubBuilder : ClsStubBuilder() {
         }
     }
 
-    private fun createStubBuilderComponents(file: VirtualFile, packageFqName: FqName, fileContent: ByteArray): ClsStubBuilderComponents {
+    private fun createStubBuilderComponents(
+        file: VirtualFile,
+        packageFqName: FqName,
+        fileContent: ByteArray,
+        jvmMetadataVersion: JvmMetadataVersion
+    ): ClsStubBuilderComponents {
         val classFinder = DirectoryBasedClassFinder(file.parent!!, packageFqName)
-        val classDataFinder = DirectoryBasedDataFinder(classFinder, LOG)
+        val classDataFinder = DirectoryBasedDataFinder(classFinder, LOG, jvmMetadataVersion)
         val annotationLoader = AnnotationLoaderForClassFileStubBuilder(classFinder, file, fileContent)
         return ClsStubBuilderComponents(classDataFinder, annotationLoader, file)
     }

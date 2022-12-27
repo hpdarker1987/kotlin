@@ -23,5 +23,5 @@ import org.jetbrains.kotlin.name.ClassId;
 
 public interface ClassDataFinder {
     @Nullable
-    ClassData findClassData(@NotNull ClassId classId, @NotNull LanguageVersion languageVersion);
+    ClassData findClassData(@NotNull ClassId classId);
 }

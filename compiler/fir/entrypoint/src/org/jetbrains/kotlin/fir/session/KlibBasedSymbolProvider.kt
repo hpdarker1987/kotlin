@@ -20,7 +20,7 @@ import org.jetbrains.kotlin.metadata.ProtoBuf
 import org.jetbrains.kotlin.metadata.deserialization.NameResolverImpl
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
-import org.jetbrains.kotlin.resolve.CompilerDeserializationConfiguration
+import org.jetbrains.kotlin.resolve.jvm.JvmCompilerDeserializationConfiguration
 import org.jetbrains.kotlin.serialization.deserialization.IncompatibleVersionErrorData
 import org.jetbrains.kotlin.serialization.deserialization.descriptors.DeserializedContainerAbiStability
 import org.jetbrains.kotlin.serialization.deserialization.descriptors.DeserializedContainerSource
@@ -53,7 +53,7 @@ class KlibBasedSymbolProvider(
 
     private val annotationDeserializer = KlibBasedAnnotationDeserializer(session)
     private val constDeserializer = FirConstDeserializer(session, KlibMetadataSerializerProtocol)
-    private val deserializationConfiguration = CompilerDeserializationConfiguration(session.languageVersionSettings)
+    private val deserializationConfiguration = JvmCompilerDeserializationConfiguration(session.languageVersionSettings)
     private val cachedFragments = mutableMapOf<KotlinResolvedLibrary, MutableMap<Pair<String, String>, ProtoBuf.PackageFragment>>()
 
     private fun getPackageFragment(
@@ -114,7 +114,7 @@ class KlibBasedSymbolProvider(
                 )
 
                 val finder = KlibMetadataClassDataFinder(fragment, nameResolver)
-                val classProto = finder.findClassData(classId, session.languageVersionSettings.languageVersion)?.classProto ?: continue
+                val classProto = finder.findClassData(classId)?.classProto ?: continue
 
                 val moduleData = moduleDataProvider.getModuleData(libraryPath) ?: return null
 
