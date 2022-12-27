@@ -12,7 +12,6 @@ import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.util.Computable
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiJavaModule
-import org.jetbrains.kotlin.config.LanguageVersion
 import org.jetbrains.kotlin.metadata.jvm.deserialization.JvmMetadataVersion
 import java.lang.ref.WeakReference
 import java.util.concurrent.CopyOnWriteArrayList
@@ -63,8 +62,8 @@ class KotlinBinaryClassCache : Disposable {
         @Deprecated(
             "Please pass languageVersion explicitly",
             ReplaceWith(
-                "getKotlinBinaryClassOrClassFileContent(file, LanguageVersion.LATEST_STABLE, fileContent = fileContent)",
-                "org.jetbrains.kotlin.config.LanguageVersion"
+                "getKotlinBinaryClassOrClassFileContent(file, JvmMetadataVersion.INSTANCE, fileContent = fileContent)",
+                "org.jetbrains.kotlin.metadata.jvm.deserialization.JvmMetadataVersion"
             )
         )
         fun getKotlinBinaryClassOrClassFileContent(

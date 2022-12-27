@@ -63,14 +63,15 @@ class JvmClassFileBasedSymbolProvider(
             if (partName in kotlinBuiltins) return@mapNotNull null
             val classId = ClassId.topLevel(JvmClassName.byInternalName(partName).fqNameForTopLevelClassMaybeWithDollars)
             if (!javaFacade.hasTopLevelClassOf(classId)) return@mapNotNull null
+            val jvmMetadataVersion = session.languageVersionSettings.languageVersion.toMetadataVersion()
             val (kotlinJvmBinaryClass, byteContent) = kotlinClassFinder.findKotlinClassOrContent(
-                classId, session.languageVersionSettings.languageVersion.toMetadataVersion()
+                classId, jvmMetadataVersion
             ) as? KotlinClassFinder.Result.KotlinClass ?: return@mapNotNull null
 
             val facadeName = kotlinJvmBinaryClass.classHeader.multifileClassName?.takeIf { it.isNotEmpty() }
             val facadeFqName = facadeName?.let { JvmClassName.byInternalName(it).fqNameForTopLevelClassMaybeWithDollars }
             val facadeBinaryClass = facadeFqName?.let {
-                kotlinClassFinder.findKotlinClass(ClassId.topLevel(it), session.languageVersionSettings.languageVersion.toMetadataVersion())
+                kotlinClassFinder.findKotlinClass(ClassId.topLevel(it), jvmMetadataVersion)
             }
 
             val moduleData = moduleDataProvider.getModuleData(kotlinJvmBinaryClass.containingLibrary.toPath()) ?: return@mapNotNull null

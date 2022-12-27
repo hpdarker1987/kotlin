@@ -85,7 +85,7 @@ class MetadataPackageFragment(
     private val metadataPartProvider: MetadataPartProvider,
     private val finder: KotlinMetadataFinder
 ) : DeserializedPackageFragment(fqName, storageManager, module) {
-    override val classDataFinder = ClassDataFinder { classId, _ ->
+    override val classDataFinder = ClassDataFinder { classId ->
         val topLevelClassId = generateSequence(classId, ClassId::getOuterClassId).last()
         val stream = finder.findMetadata(topLevelClassId) ?: return@ClassDataFinder null
         val (message, nameResolver, version) = readProto(stream)
