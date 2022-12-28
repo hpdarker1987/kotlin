@@ -1,9 +1,9 @@
 // !DIAGNOSTICS: -UNUSED_ANONYMOUS_PARAMETER
+// !API_VERSION: 1.9
 import kotlin.jvm.Volatile as JvmVolatile
 import kotlin.concurrent.Volatile
 import kotlin.properties.Delegates
 
-@OptIn(ExperimentalStdlibApi::class)
 class ConcurrentVolatile {
     @Volatile val x = 0
     // ok

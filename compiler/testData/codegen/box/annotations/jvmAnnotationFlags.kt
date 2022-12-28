@@ -1,5 +1,6 @@
 // TARGET_BACKEND: JVM
 
+// !API_VERSION: 1.9
 // due to KT-55615
 // IGNORE_BACKEND_K2: JVM_IR
 
@@ -15,7 +16,6 @@ class CustomDelegate {
 
 class C {
     @Volatile var vol = 1
-    @OptIn(ExperimentalStdlibApi::class)
     @kotlin.concurrent.Volatile var vol2 = 1
     @Transient val tra = 1
     @delegate:Transient val del: String by CustomDelegate()

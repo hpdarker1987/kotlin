@@ -1,6 +1,6 @@
 package
 
-@kotlin.OptIn(markerClass = {kotlin.ExperimentalStdlibApi::class}) public final class ConcurrentVolatile {
+public final class ConcurrentVolatile {
     public constructor ConcurrentVolatile()
     @field:kotlin.concurrent.Volatile /* = kotlin.jvm.Volatile */ public final var noBacking: kotlin.String
     @field:kotlin.concurrent.Volatile /* = kotlin.jvm.Volatile */ public final val w: kotlin.Int = 2
