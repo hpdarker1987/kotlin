@@ -19,4 +19,6 @@ enum class DerivedEnum : BaseJava {
 
 fun bar(e: DerivedEnum) {}
 
-fun baz(s: String) {}
+fun baz(s: String) {
+    DerivedEnum.x
+}

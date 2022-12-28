@@ -24,4 +24,5 @@ FILE: DerivedEnum.kt
     public final fun bar(e: R|DerivedEnum|): R|kotlin/Unit| {
     }
     public final fun baz(s: R|kotlin/String|): R|kotlin/Unit| {
+        Q|DerivedEnum|.R|/DerivedEnum.x|
     }
