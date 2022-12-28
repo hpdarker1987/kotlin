@@ -412,6 +412,18 @@ public class DiagnosisCompilerTestFE10TestdataTestGenerated extends AbstractDiag
         }
 
         @Test
+        @TestMetadata("javaFieldKotlinPropertyJavaFieldInPackagePrivate.kt")
+        public void testJavaFieldKotlinPropertyJavaFieldInPackagePrivate() throws Exception {
+            runTest("compiler/testData/diagnostics/tests/javaFieldKotlinPropertyJavaFieldInPackagePrivate.kt");
+        }
+
+        @Test
+        @TestMetadata("javaFieldKotlinPropertyJavaPackagePrivateField.kt")
+        public void testJavaFieldKotlinPropertyJavaPackagePrivateField() throws Exception {
+            runTest("compiler/testData/diagnostics/tests/javaFieldKotlinPropertyJavaPackagePrivateField.kt");
+        }
+
+        @Test
         @TestMetadata("javaProtectedFieldAndKotlinInvisiblePropertyReference.kt")
         public void testJavaProtectedFieldAndKotlinInvisiblePropertyReference() throws Exception {
             runTest("compiler/testData/diagnostics/tests/javaProtectedFieldAndKotlinInvisiblePropertyReference.kt");
